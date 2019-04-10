@@ -10,6 +10,7 @@ const initialState = {
 
 const WithPizzaCalculations = (WrappedComponent) => {
   return class extends Component {
+    static displayName = `WithPizzaCalculations(${WrappedComponent.displayName || WrappedComponent.name})`;
     state = { ...initialState };
 
   updateNumberOfPeople = event => {
