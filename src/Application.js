@@ -8,8 +8,9 @@ const initialState = {
   slicesPerPerson: 2,
 };
 
-export default class Application extends Component {
-  state = { ...initialState };
+const WithPizzaCalculations = (WrappedComponent) => {
+  return class extends Component {
+    state = { ...initialState };
 
   updateNumberOfPeople = event => {
     const numberOfPeople = parseInt(event.target.value, 10);
@@ -33,7 +34,7 @@ export default class Application extends Component {
     );
 
     return (
-      <PizzaCalculator
+      <WrappedComponent
         numberOfPeople={numberOfPeople}
         slicesPerPerson={slicesPerPerson}
         numberOfPizzas={numberOfPizzas}
@@ -42,5 +43,16 @@ export default class Application extends Component {
         reset={this.reset}
       />
     );
+  }
+  }
+}
+
+const PizzaContainer = WithPizzaCalculations(PizzaCalculator);
+
+export default class Application extends Component {
+  render() {
+    return (
+      <PizzaContainer />
+    )
   }
 }
