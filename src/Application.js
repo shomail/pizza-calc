@@ -1,31 +1,33 @@
 import React, { Component } from 'react';
+import PizzaCalculatorStore from './PizzaCalculatorStore';
 import PizzaCalculator from './PizzaCalculator';
-
 import calculatePizzasNeeded from './lib/calculate-pizzas-needed';
+import * as actions from './actions';
 
-const initialState = {
-  numberOfPeople: 10,
-  slicesPerPerson: 2,
-};
-
-const WithPizzaCalculations = (WrappedComponent) => {
-  return class extends Component {
-    static displayName = `WithPizzaCalculations(${WrappedComponent.displayName || WrappedComponent.name})`;
-    state = { ...initialState };
+export default class Application extends Component {
+  state = PizzaCalculatorStore.getState()
 
   updateNumberOfPeople = event => {
     const numberOfPeople = parseInt(event.target.value, 10);
-    this.setState({ numberOfPeople });
+    actions.updateNumberOfPeople(numberOfPeople)
   };
 
   updateSlicesPerPerson = event => {
     const slicesPerPerson = parseInt(event.target.value, 10);
-    this.setState({ slicesPerPerson });
+    actions.updateSlicesPerPerson(slicesPerPerson);
   };
 
-  reset = event => {
-    this.setState({ ...initialState });
-  };
+  updateState = () => {
+    this.setState(PizzaCalculatorStore.getState);
+  }
+
+  componentDidMount() {
+    PizzaCalculatorStore.on('change', this.updateState)
+  }
+
+  componentWillUnmount() {
+    PizzaCalculatorStore.off('change', this.updateState)
+  }
 
   render() {
     const { numberOfPeople, slicesPerPerson } = this.state;
@@ -35,25 +37,13 @@ const WithPizzaCalculations = (WrappedComponent) => {
     );
 
     return (
-      <WrappedComponent
-        numberOfPeople={numberOfPeople}
-        slicesPerPerson={slicesPerPerson}
-        numberOfPizzas={numberOfPizzas}
+      <PizzaCalculator
+        { ...this.state }
         updateNumberOfPeople={this.updateNumberOfPeople}
         updateSlicesPerPerson={this.updateSlicesPerPerson}
-        reset={this.reset}
+        numberOfPizzas={numberOfPizzas}
+        reset={actions.reset}
       />
-    );
-  }
-  }
-}
-
-const PizzaContainer = WithPizzaCalculations(PizzaCalculator);
-
-export default class Application extends Component {
-  render() {
-    return (
-      <PizzaContainer />
     )
   }
-}
+  }
