@@ -30,6 +30,9 @@ class PizzaCalculatorStore extends EventEmitter {
       }
     })
   }
+  getState() {
+    return calculator
+  }
 }
 
 export default new PizzaCalculatorStore();
